@@ -1,93 +1,135 @@
 import React from 'react';
-import { Mail, MailCheck, CalendarClock, Sparkles } from 'lucide-react';
+import {
+  Inbox,
+  MailCheck,
+  Send,
+  Bookmark,
+  CalendarClock,
+  Sparkles
+} from 'lucide-react';
 
 interface DashboardStatsProps {
-  totalEmails: number;
+  inboxEmails: number;
   unreadEmails: number;
+  sentEmails: number;
+  savedEmails: number;
   upcomingReminders: number;
   summariesGenerated: number;
-  onFilterUnread?: () => void;
-  onOpenReminders?: () => void;
+  onOpenInbox: () => void;
+  onFilterUnread: () => void;
+  onOpenSent: () => void;
+  onOpenSaved: () => void;
+  onOpenReminders: () => void;
+  onOpenAI: () => void;
 }
 
 export const DashboardStats: React.FC<DashboardStatsProps> = ({
-  totalEmails,
+  inboxEmails,
   unreadEmails,
+  sentEmails,
+  savedEmails,
   upcomingReminders,
   summariesGenerated,
+  onOpenInbox,
   onFilterUnread,
-  onOpenReminders
+  onOpenSent,
+  onOpenSaved,
+  onOpenReminders,
+  onOpenAI
 }) => {
   const stats = [
     {
-      label: 'Total Emails',
-      value: totalEmails,
-      icon: Mail,
-      iconColor: 'text-sky-600',
-      bgColor: 'bg-sky-50',
-      borderColor: 'border-sky-100',
-      description: 'Active in mailboxes'
+      label: 'Inbox',
+      value: inboxEmails,
+      description: 'Emails in your inbox',
+      icon: Inbox,
+      color: 'text-sky-600',
+      bg: 'bg-sky-50',
+      border: 'border-sky-100',
+      onClick: onOpenInbox
     },
     {
-      label: 'Unread Emails',
+      label: 'Unread',
       value: unreadEmails,
+      description: 'Needs your attention',
       icon: MailCheck,
-      iconColor: 'text-blue-600',
-      bgColor: 'bg-blue-50',
-      borderColor: 'border-blue-100',
-      description: unreadEmails > 0 ? 'Requires your review' : 'Inbox zero achieved',
-      onClick: onFilterUnread,
-      clickable: true
+      color: 'text-blue-600',
+      bg: 'bg-blue-50',
+      border: 'border-blue-100',
+      onClick: onFilterUnread
     },
     {
-      label: 'Upcoming Reminders',
+      label: 'Sent',
+      value: sentEmails,
+      description: 'Messages in Sent',
+      icon: Send,
+      color: 'text-violet-600',
+      bg: 'bg-violet-50',
+      border: 'border-violet-100',
+      onClick: onOpenSent
+    },
+    {
+      label: 'Saved Mails',
+      value: savedEmails,
+      description: 'Kept for later',
+      icon: Bookmark,
+      color: 'text-amber-600',
+      bg: 'bg-amber-50',
+      border: 'border-amber-100',
+      onClick: onOpenSaved
+    },
+    {
+      label: 'Reminders',
       value: upcomingReminders,
+      description: 'Upcoming deadlines',
       icon: CalendarClock,
-      iconColor: 'text-indigo-600',
-      bgColor: 'bg-indigo-50',
-      borderColor: 'border-indigo-100',
-      description: 'Tracked deadlines',
-      onClick: onOpenReminders,
-      clickable: true
+      color: 'text-indigo-600',
+      bg: 'bg-indigo-50',
+      border: 'border-indigo-100',
+      onClick: onOpenReminders
     },
     {
-      label: 'AI Summaries Generated',
+      label: 'AI Summaries',
       value: summariesGenerated,
+      description: 'Summaries generated',
       icon: Sparkles,
-      iconColor: 'text-teal-600',
-      bgColor: 'bg-teal-50',
-      borderColor: 'border-teal-100',
-      description: 'Saved ~24 min reading'
+      color: 'text-teal-600',
+      bg: 'bg-teal-50',
+      border: 'border-teal-100',
+      onClick: onOpenAI
     }
   ];
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
-      {stats.map((stat, i) => {
+    <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6">
+      {stats.map(stat => {
         const Icon = stat.icon;
+
         return (
-          <div
-            key={i}
-            onClick={stat.clickable && stat.onClick ? stat.onClick : undefined}
-            className={`bg-white rounded-2xl border ${stat.borderColor} p-3.5 sm:p-4 shadow-2xs hover:shadow-xs transition flex flex-col justify-between ${
-              stat.clickable ? 'cursor-pointer hover:border-sky-300' : ''
-            }`}
+          <button
+            key={stat.label}
+            type="button"
+            onClick={stat.onClick}
+            className={`w-full text-left bg-white rounded-2xl border ${stat.border} p-3.5 sm:p-4 shadow-2xs hover:shadow-sm hover:border-sky-300 transition flex flex-col justify-between cursor-pointer`}
           >
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] sm:text-xs font-semibold text-slate-500">{stat.label}</span>
-              <div className={`w-8 h-8 rounded-xl ${stat.bgColor} flex items-center justify-center shrink-0`}>
-                <Icon className={`w-4 h-4 ${stat.iconColor}`} />
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs font-semibold text-slate-500">
+                {stat.label}
+              </span>
+              <div className={`w-8 h-8 rounded-xl ${stat.bg} flex items-center justify-center shrink-0`}>
+                <Icon className={`w-4 h-4 ${stat.color}`} />
               </div>
             </div>
-            <div className="mt-2">
-              <div className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-none">
+
+            <div className="mt-3">
+              <div className="text-2xl font-bold text-slate-900 tracking-tight leading-none">
                 {stat.value}
               </div>
-              <p className="text-[10px] sm:text-[11px] text-slate-400 mt-1 truncate">
+              <p className="text-[10px] sm:text-[11px] text-slate-400 mt-2">
                 {stat.description}
               </p>
             </div>
-          </div>
+          </button>
         );
       })}
     </div>

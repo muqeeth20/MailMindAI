@@ -1,5 +1,5 @@
-/**
- * MailMind AI — Smart Email Assistant
+﻿/**
+ * MailMind AI â€” Smart Email Assistant
  * Modern, responsive AI-powered email productivity platform
  * Clean white background with light blue accents, Gmail-like ergonomics,
  * and AI summarization, reply generation, reminders, and assistant.
@@ -54,7 +54,7 @@ const CURRENT_USER: User = {
   name: 'Alex Chen',
   email: 'alex.chen@stanford.edu',
   avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
-  role: 'CS Senior · Stanford University'
+  role: 'CS Senior Â· Stanford University'
 };
 
 export default function App() {
@@ -208,6 +208,10 @@ export default function App() {
     return emails.filter(e => e.starred && e.folder !== 'trash').length;
   }, [emails]);
 
+  const savedCount = useMemo(() => {
+  return emails.filter(e => e.saved && e.folder !== 'trash').length;
+}, [emails]);
+
   const upcomingRemindersCount = useMemo(() => {
     return reminders.filter(r => r.status === 'upcoming').length;
   }, [reminders]);
@@ -221,10 +225,12 @@ export default function App() {
     let result = emails;
 
     if (currentView === 'starred') {
-      result = result.filter(e => e.starred && e.folder !== 'trash');
-    } else if (['inbox', 'sent', 'archived', 'trash'].includes(currentView)) {
-      result = result.filter(e => e.folder === currentView);
-    }
+  result = result.filter(e => e.starred && e.folder !== 'trash');
+} else if (currentView === 'saved') {
+  result = result.filter(e => e.saved && e.folder !== 'trash');
+} else if (['inbox', 'sent', 'archived', 'trash'].includes(currentView)) {
+  result = result.filter(e => e.folder === currentView);
+}
 
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
@@ -511,6 +517,7 @@ export default function App() {
         }}
         unreadCount={unreadCount}
         starredCount={starredCount}
+        savedCount={savedCount}
         draftsCount={drafts.length}
         upcomingRemindersCount={upcomingRemindersCount}
         onOpenCompose={() => {
@@ -548,40 +555,64 @@ export default function App() {
         {/* Dynamic Workspace Container */}
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-7">
           <div className="max-w-6xl mx-auto space-y-6">
-            {/* Dashboard Statistics Widget (always available or prominent on mail views) */}
-            {!selectedEmail && ['inbox', 'starred', 'sent', 'archived'].includes(currentView) && (
-              <DashboardStats
-                totalEmails={emails.filter(e => e.folder !== 'trash').length}
-                unreadEmails={unreadCount}
-                upcomingReminders={upcomingRemindersCount}
-                summariesGenerated={summariesGeneratedCount}
-                onFilterUnread={() => setCategoryFilter('unread')}
-                onOpenReminders={() => {
-                  setCurrentView('reminders');
-                  setSelectedEmail(null);
-                }}
-              />
-            )}
+{/* Dashboard Statistics Widget */}
+{!selectedEmail &&
+  ['inbox', 'starred', 'saved', 'sent', 'archived'].includes(currentView) && (
+    <DashboardStats
+      inboxEmails={emails.filter(e => e.folder === 'inbox').length}
+      unreadEmails={unreadCount}
+      sentEmails={emails.filter(e => e.folder === 'sent').length}
+      savedEmails={savedCount}
+      upcomingReminders={upcomingRemindersCount}
+      summariesGenerated={summariesGeneratedCount}
+      onOpenInbox={() => {
+        setCurrentView('inbox');
+        setSelectedEmail(null);
+        setCategoryFilter('all');
+      }}
+      onFilterUnread={() => {
+        setCurrentView('inbox');
+        setSelectedEmail(null);
+        setCategoryFilter('unread');
+      }}
+      onOpenSent={() => {
+        setCurrentView('sent');
+        setSelectedEmail(null);
+      }}
+      onOpenSaved={() => {
+        setCurrentView('saved');
+        setSelectedEmail(null);
+      }}
+      onOpenReminders={() => {
+        setCurrentView('reminders');
+        setSelectedEmail(null);
+      }}
+      onOpenAI={() => {
+        setCurrentView('assistant');
+        setSelectedEmail(null);
+      }}
+    />
+  )}
 
-            {/* View 1: Reading Selected Email */}
-            {selectedEmail ? (
-              <EmailViewer
-                email={selectedEmail}
-                onBack={() => setSelectedEmail(null)}
-                onToggleStar={handleToggleStar}
-                onArchive={handleArchiveEmail}
-                onDelete={handleDeleteEmail}
-                onToggleRead={handleToggleRead}
-                onConfirmDeadlineAsReminder={handleConfirmDeadlineAsReminder}
-                onDismissDeadline={handleDismissDeadline}
-                onUpdateEmailSummary={handleUpdateEmailSummary}
-                onDemoSendReply={handleDemoSendReply}
-                showToast={showToast}
-              />
-            ) : (
-              <>
+{/* View 1: Reading Selected Email */}
+{selectedEmail ? (
+  <EmailViewer
+    email={selectedEmail}
+    onBack={() => setSelectedEmail(null)}
+    onToggleStar={handleToggleStar}
+    onArchive={handleArchiveEmail}
+    onDelete={handleDeleteEmail}
+    onToggleRead={handleToggleRead}
+    onConfirmDeadlineAsReminder={handleConfirmDeadlineAsReminder}
+    onDismissDeadline={handleDismissDeadline}
+    onUpdateEmailSummary={handleUpdateEmailSummary}
+    onDemoSendReply={handleDemoSendReply}
+    showToast={showToast}
+  />
+) : (
+  <>
                 {/* View 2: Mailboxes (Inbox, Starred, Sent, Archived) */}
-                {['inbox', 'starred', 'sent', 'archived'].includes(currentView) && (
+                {['inbox', 'starred', 'saved', 'sent', 'archived'].includes(currentView) && (
                   <InboxListView
                     emails={currentFolderEmails}
                     selectedFolder={currentView as FolderType}
@@ -822,3 +853,4 @@ export default function App() {
     </div>
   );
 }
+

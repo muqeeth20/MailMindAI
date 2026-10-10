@@ -69,13 +69,14 @@ export const InboxListView: React.FC<InboxListViewProps> = ({
   };
 
   const folderTitleMap: Record<FolderType, string> = {
-    inbox: 'Inbox',
-    starred: 'Starred Emails',
-    sent: 'Sent Messages',
-    drafts: 'Drafts',
-    archived: 'Archived Emails',
-    trash: 'Trash'
-  };
+  inbox: 'Inbox',
+  starred: 'Starred Emails',
+  saved: 'Saved Mails',
+  sent: 'Sent Messages',
+  drafts: 'Drafts',
+  archived: 'Archived Emails',
+  trash: 'Trash'
+};
 
   return (
     <div className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden">

@@ -2,6 +2,7 @@ import React from 'react';
 import { 
   Inbox, 
   Star, 
+  Bookmark,
   Send, 
   FileText, 
   Archive, 
@@ -22,6 +23,7 @@ interface SidebarProps {
   onSelectView: (view: string) => void;
   unreadCount: number;
   starredCount: number;
+  savedCount: number;
   draftsCount: number;
   upcomingRemindersCount: number;
   onOpenCompose: () => void;
@@ -36,6 +38,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onSelectView,
   unreadCount,
   starredCount,
+  savedCount,
   draftsCount,
   upcomingRemindersCount,
   onOpenCompose,
@@ -47,6 +50,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const mailFolders = [
     { id: 'inbox', label: 'Inbox', icon: Inbox, count: unreadCount, badgeColor: 'bg-sky-500 text-white' },
     { id: 'starred', label: 'Starred', icon: Star, count: starredCount, badgeColor: 'bg-amber-100 text-amber-800' },
+    {
+        id: 'saved',
+        label: 'Saved Mails',
+        icon: Bookmark,
+        count: savedCount,
+        badgeColor: 'bg-amber-100 text-amber-800'
+      },
     { id: 'sent', label: 'Sent', icon: Send },
     { id: 'drafts', label: 'Drafts', icon: FileText, count: draftsCount > 0 ? draftsCount : null, badgeColor: 'bg-slate-200 text-slate-700' },
     { id: 'archived', label: 'Archived', icon: Archive },

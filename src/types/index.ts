@@ -1,6 +1,13 @@
 export type PriorityLevel = 'Urgent' | 'Important' | 'Informational';
 
-export type FolderType = 'inbox' | 'starred' | 'sent' | 'drafts' | 'archived' | 'trash';
+export type FolderType =
+  | 'inbox'
+  | 'starred'
+  | 'saved'
+  | 'sent'
+  | 'drafts'
+  | 'archived'
+  | 'trash';
 
 export type ReplyTone = 'professional' | 'friendly' | 'formal';
 
@@ -60,6 +67,7 @@ export interface EmailItem {
   priority: PriorityLevel;
   read: boolean;
   starred: boolean;
+  saved?: boolean;
   folder: FolderType;
   category: 'primary' | 'university' | 'career' | 'personal';
   summary?: AISummary;
